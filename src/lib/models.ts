@@ -38,7 +38,7 @@ export class Node {
       temp = temp.parent;
     }
     if (isActive) {
-      return names.reverse().join("|");
+      return names.reverse().join("  |  ");
     } else {
       return "";
     }
