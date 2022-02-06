@@ -1,0 +1,17 @@
+{
+  "name": "Product",
+  "attributes": [
+    { "name": "quantity", "values": [ "150gm", "200 gm" ] },
+    {
+        "name": "flavour",
+        "values": [ "cashew", "honey" ]
+    },
+    {
+        "name": "package",
+        "values": [ "paperbag", "basket" ]
+    }
+  ]
+}
+
+
+

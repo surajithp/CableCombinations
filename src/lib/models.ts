@@ -16,12 +16,20 @@ export class VariantAttribute {
 export class Node {
   children: Array<Node> = [];
   parent: Node;
+  path: string
   attributeName: string;
   attributeValue: AttributeValue;
+  leaves: Array<any> = []
 
   addChild(node: Node) {
     this.children = [...this.children, node];
     node.parent = this;
+    if(node.parent && this.attributeValue){
+      if(!node.parent.path){
+        node.parent.path = node.parent.attributeValue
+      }
+      node.path = node.parent.path + "  |  " + node.attributeValue
+    }
   }
 
   nameString() {
@@ -43,6 +51,19 @@ export class Node {
       return "";
     }
   }
+
+  traverse(){
+    let temp = [this];
+    while (temp.length > 0) {
+      let node = temp.pop();
+      if (node.children.length === 0) {
+          this.leaves.push(node.path)
+      } else {
+        temp.push(...node.children);
+      }
+    }
+  }
+  
 }
 
 export class VariantGenerator {
@@ -65,8 +86,32 @@ export class VariantGenerator {
       });
       leaves = [...newLeaves];
     }
-    return leaves
-      .map((item) => item.variantName())
-      .filter((item) => item.length > 0);
+    root.traverse()
+    console.log("====root children",root.children)
+    return root.leaves
+  }
+
+  getRoot(product: Product) {
+    let root = new Node();
+    root.children = [];
+    root.attributeName = "root"
+    root.attributeValue = "root"
+    let leaves = [root];
+    for (let index = 0; index < product.attributes.length; index++) {
+      const element = product.attributes[index];
+      let newLeaves = [];
+      leaves.forEach((item) => {
+        let nodesToAdd = element.values.map((item) => {
+          let n = new Node();
+          n.attributeName = element.name;
+          n.attributeValue = item;
+          return n;
+        });
+        newLeaves = [...newLeaves, ...nodesToAdd];
+        nodesToAdd.forEach((el) => item.addChild(el));
+      });
+      leaves = [...newLeaves];
+    }
+    return root
   }
 }
